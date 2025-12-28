@@ -1,16 +1,17 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'org.springframework.boot' version '3.2.1'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'com.seungjjun.watermark'
 version = '1.0.0-SNAPSHOT'
-description = 'Watermark API Layer - REST API endpoints for watermarking'
+description = 'Watermark Service Layer - Business logic'
 
 dependencies {
-    implementation project(':watermark-service')
+    api project(':watermark-core')
 
+    implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // Lombok
@@ -31,11 +32,11 @@ test {
     }
 }
 
+// 라이브러리로 사용되므로 bootJar 비활성화
 bootJar {
-    enabled = true
-    archiveFileName = "watermark-api-${version}.jar"
+    enabled = false
 }
 
 jar {
-    enabled = false
+    enabled = true
 }
