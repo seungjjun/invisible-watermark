@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: watermark-api
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.seungjjun.watermark: DEBUG

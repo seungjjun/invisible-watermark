@@ -1,2 +1,10 @@
 rootProject.name = 'invisible-watermark'
+
+// Core module - Watermarking algorithms (DCT, LSB)
 include 'watermark-core'
+
+// API module - REST API endpoints
+include 'watermark-api'
+
+// Service module - Business logic (will be added later)
+// include 'watermark-service'
