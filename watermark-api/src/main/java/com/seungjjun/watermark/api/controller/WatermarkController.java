@@ -1,12 +1,17 @@
 package com.seungjjun.watermark.api.controller;
 
+import com.seungjjun.watermark.api.dto.request.WatermarkEmbedRequest;
+import com.seungjjun.watermark.api.dto.request.WatermarkExtractRequest;
+import com.seungjjun.watermark.api.dto.response.WatermarkExtractResponse;
 import com.seungjjun.watermark.service.WatermarkService;
+import com.seungjjun.watermark.service.dto.WatermarkEmbedResult;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,29 +25,47 @@ public class WatermarkController {
     private final WatermarkService watermarkService;
 
     @PostMapping("/embed")
-    public ResponseEntity<byte[]> embedWatermark(
-            @RequestParam("image") MultipartFile image,
-            @RequestParam("watermarkText") String watermarkText) {
-        log.info("POST /embed - file: {}, watermarkText: {}", image.getOriginalFilename(), watermarkText);
+    public ResponseEntity<byte[]> embedWatermark(@Valid WatermarkEmbedRequest request) {
+        log.info("POST /embed - file: {}, watermarkText: {}",
+                request.image().getOriginalFilename(),
+                request.watermarkText());
 
-        byte[] result = watermarkService.embedWatermark(image, watermarkText);
+        WatermarkEmbedResult result = watermarkService.embedWatermark(
+                request.image(),
+                request.watermarkText()
+        );
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-        headers.setContentDispositionFormData("attachment", "watermarked-" + image.getOriginalFilename());
+        log.info("Watermark embedded successfully - size: {} bytes, format: {}",
+                result.watermarkedImageBytes().length, result.format());
 
+        String filename = "watermarked." + result.format();
         return ResponseEntity.ok()
-                .headers(headers)
-                .body(result);
+                .contentType(getMediaType(result.format()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .body(result.watermarkedImageBytes());
     }
 
     @PostMapping("/extract")
-    public ResponseEntity<String> extractWatermark(
-            @RequestParam("image") MultipartFile image,
-            @RequestParam("length") int length) {
-        log.info("POST /extract - file: {}, length: {}", image.getOriginalFilename(), length);
+    public WatermarkExtractResponse extractWatermark(@Valid WatermarkExtractRequest request) {
+        log.info("POST /extract - file: {}, length: {}",
+                request.image().getOriginalFilename(),
+                request.watermarkLength());
 
-        String result = watermarkService.extractWatermark(image, length);
-        return ResponseEntity.ok("Extracted watermark: " + result);
+        String extractedText = watermarkService.extractWatermark(
+                request.image(),
+                request.watermarkLength()
+        );
+
+        log.info("Watermark extracted successfully - text: '{}'", extractedText);
+        return WatermarkExtractResponse.from(extractedText);
+    }
+
+    private MediaType getMediaType(String format) {
+        return switch (format.toLowerCase()) {
+            case "png" -> MediaType.IMAGE_PNG;
+            case "jpg", "jpeg" -> MediaType.IMAGE_JPEG;
+            case "gif" -> MediaType.IMAGE_GIF;
+            default -> MediaType.APPLICATION_OCTET_STREAM;
+        };
     }
 }

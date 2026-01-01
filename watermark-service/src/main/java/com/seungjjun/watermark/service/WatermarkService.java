@@ -1,6 +1,7 @@
 package com.seungjjun.watermark.service;
 
 import com.seungjjun.watermark.core.dct.DCTWatermark;
+import com.seungjjun.watermark.service.dto.WatermarkEmbedResult;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +25,7 @@ public class WatermarkService {
 
     private final DCTWatermark dctWatermark = new DCTWatermark();
 
-    public byte[] embedWatermark(MultipartFile imageFile, String watermarkText) {
+    public WatermarkEmbedResult embedWatermark(MultipartFile imageFile, String watermarkText) {
         log.info("embedWatermark called - file: {}, watermark: {}",
             imageFile.getOriginalFilename(), watermarkText);
 
@@ -35,10 +36,10 @@ public class WatermarkService {
             }
 
             String format = detectImageFormat(imageFile);
-            byte[] watermarkedImageBytes = dctWatermark.embedWatermark(originalImage, watermarkText, format);
+            byte[] bytes = dctWatermark.embedWatermark(originalImage, watermarkText, format);
 
-            log.info("Watermark embedded successfully - result size: {} bytes", watermarkedImageBytes.length);
-            return watermarkedImageBytes;
+            log.info("Watermark embedded successfully - result size: {} bytes, format: {}", bytes.length, format);
+            return WatermarkEmbedResult.of(bytes, format);
 
         } catch (IOException e) {
             log.error("Failed to embed watermark", e);
