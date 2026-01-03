@@ -9,6 +9,8 @@ version = '1.0.0-SNAPSHOT'
 description = 'Watermark Service Layer - Business logic'
 
 dependencies {
+    implementation project(':watermark-common')
+
     api project(':watermark-core')
 
     implementation 'org.springframework.boot:spring-boot-starter'

@@ -9,6 +9,7 @@ version = '1.0.0-SNAPSHOT'
 description = 'Watermark API Layer - REST API endpoints for watermarking'
 
 dependencies {
+    implementation project(':watermark-common')
     implementation project(':watermark-service')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'

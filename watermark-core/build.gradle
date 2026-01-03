@@ -7,6 +7,9 @@ version = '0.0.1-SNAPSHOT'
 description = 'watermark-core'
 
 dependencies {
+    // Common module
+    implementation project(':watermark-common')
+
     // Utils
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'

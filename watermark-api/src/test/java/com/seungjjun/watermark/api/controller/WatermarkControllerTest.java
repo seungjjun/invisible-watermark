@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(WatermarkController.class)
-@DisplayName("WatermarkController 테스트")
 class WatermarkControllerTest {
 
     @Autowired

@@ -1,5 +1,8 @@
 rootProject.name = 'invisible-watermark'
 
+// Common module - Shared infrastructure
+include 'watermark-common'
+
 // Core module - Watermarking algorithms (DCT, LSB)
 include 'watermark-core'
 
